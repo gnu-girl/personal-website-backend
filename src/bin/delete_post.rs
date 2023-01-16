@@ -1,7 +1,8 @@
 use diesel::prelude::*;
-use rust_zee::establish_connection;
+use rust_zee::blog::client::establish_connection;
 use std::env::args;
 
+/* Delete post with matching title */
 fn main() {
     use rust_zee::schema::posts::dsl::*;
 

@@ -1,8 +1,9 @@
-use rust_zee::models::Post;
+use rust_zee::blog::models::Post;
 use diesel::prelude::*;
-use rust_zee::establish_connection;
+use rust_zee::blog::client::establish_connection;
 use std::env::args;
 
+/* Update a draft post by changing a given post's field to published */
 fn main() {
     use rust_zee::schema::posts::dsl::{posts, published};
 

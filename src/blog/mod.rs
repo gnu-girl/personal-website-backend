@@ -1,1 +1,3 @@
-pub mod structures;
+pub mod models;
+pub mod client;
+pub mod queries;

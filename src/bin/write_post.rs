@@ -1,6 +1,7 @@
-use rust_zee::{establish_connection, create_post};
+use rust_zee::blog::client::{establish_connection, create_post};
 use std::io::{stdin, Read};
 
+/* Use user input to create a blog post */
 fn main() {
     let connection = &mut establish_connection();
 
@@ -22,7 +23,7 @@ fn main() {
     );
     stdin().read_to_string(&mut body).unwrap();
 
-    let post = create_post(connection, title, &body, author);
+    let post = create_post(connection, title, &body, author, false);
     println!("\nSaved draft {} with id {}", title, post.id);
 }
 

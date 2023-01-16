@@ -11,9 +11,8 @@ use hand::*;
 use rocket::http::Header;
 use rocket::{Request, Response, serde};
 use rocket::fairing::{Fairing, Info, Kind};
-use rust_zee::blog::structures::Post;
-use rocket::serde::{Deserialize};
 use rocket::form::Form;
+use rust_zee::blog::client::*;
 
 pub struct CORS;
 
@@ -39,6 +38,7 @@ struct NewPost {
     title: String,
     author: String,
     body: String,
+    draft: bool
 }
 
 #[get("/")]
@@ -55,7 +55,11 @@ fn roll() -> String {
 
 #[post("/newPost", data="<post>")]
 fn new_post(post:Form<NewPost>) -> () {
-    println!("Woah!! NEW post!!! {:?}", post.title);
+    let draft = if post.draft { "draft" } else { "post" };
+    println!("Creating new {:?} with title: {:?}", draft,post.title);
+    let conn = & mut establish_connection();
+
+    create_post(conn, post.title.as_str(), post.body.as_str(), post.author.as_str(), post.draft);
 }
 
 
