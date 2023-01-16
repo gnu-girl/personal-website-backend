@@ -11,7 +11,6 @@ use hand::*;
 use rocket::http::Header;
 use rocket::{Request, Response, serde};
 use rocket::fairing::{Fairing, Info, Kind};
-use rust_zee::blog::mock_data;
 use rust_zee::blog::structures::Post;
 use rocket::serde::{Deserialize};
 use rocket::form::Form;
