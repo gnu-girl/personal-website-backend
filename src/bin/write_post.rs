@@ -1,4 +1,4 @@
-use rust_zee::blog::client::{establish_connection, create_post};
+use gg_rust::blog::client::{establish_connection, create_post};
 use std::io::{stdin, Read};
 
 /* Use user input to create a blog post */

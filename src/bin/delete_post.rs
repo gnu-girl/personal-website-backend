@@ -1,10 +1,10 @@
 use diesel::prelude::*;
-use rust_zee::blog::client::establish_connection;
+use gg_rust::blog::client::establish_connection;
 use std::env::args;
 
 /* Delete post with matching title */
 fn main() {
-    use rust_zee::schema::posts::dsl::*;
+    use gg_rust::schema::posts::dsl::*;
 
     let target = args().nth(1).expect("Expected a target to match against");
     let pattern = format!("%{}%", target);

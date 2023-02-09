@@ -1,12 +1,12 @@
-use rust_zee::blog::models::*;
+use gg_rust::blog::models::*;
 use diesel::prelude::*;
-use rust_zee::blog::client::{establish_connection,find_post};
+use gg_rust::blog::client::{establish_connection,find_post};
 use std::env::args;
 
 /* Retrieve matching posts with given id */
 
 fn main() {
-    use rust_zee::schema::posts::dsl::*;
+    use gg_rust::schema::posts::dsl::*;
 
     let query_id = args()
         .nth(1)

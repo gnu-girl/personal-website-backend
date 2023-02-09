@@ -1,11 +1,11 @@
-use rust_zee::blog::models::Post;
+use gg_rust::blog::models::Post;
 use diesel::prelude::*;
-use rust_zee::blog::client::establish_connection;
+use gg_rust::blog::client::establish_connection;
 use std::env::args;
 
 /* Update a draft post by changing a given post's field to published */
 fn main() {
-    use rust_zee::schema::posts::dsl::{posts, published};
+    use gg_rust::schema::posts::dsl::{posts, published};
 
     let id = args()
         .nth(1)

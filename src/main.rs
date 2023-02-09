@@ -12,7 +12,7 @@ use rocket::http::Header;
 use rocket::{Request, Response, serde};
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::form::Form;
-use rust_zee::blog::client::*;
+use gg_rust::blog::client::*;
 
 pub struct CORS;
 
@@ -53,14 +53,15 @@ fn roll() -> String {
     serde_json::to_string(&Die::roll()).unwrap()
 }
 
-#[post("/newPost", data="<post>")]
-fn new_post(post:Form<NewPost>) -> () {
-    let draft = if post.draft { "draft" } else { "post" };
-    println!("Creating new {:?} with title: {:?}", draft,post.title);
-    let conn = & mut establish_connection();
+//TODO: Refactor code to create new post
+// #[post("/newPost", data="<post>")]
+// fn new_post(post:Form<NewPost>) -> () {
+//     let draft = if post.draft { "draft" } else { "post" };
+//     println!("Creating new {:?} with title: {:?}", draft,post.title);
+//     let conn = & mut establish_connection();
 
-    create_post(conn, post.title.as_str(), post.body.as_str(), post.author.as_str(), post.draft);
-}
+//     create_post(conn, post.title.as_str(), post.body.as_str(), post.author.as_str(), post.draft);
+// }
 
 
 #[get("/newHand")]
@@ -74,6 +75,6 @@ fn rocket() -> _ {
         .mount("/", routes![index])
         .mount("/", routes![roll])
         .mount("/", routes![new_hand])
-        .mount("/blog", routes![new_post])
+        // .mount("/blog", routes![new_post])
         .attach(CORS)
 }
