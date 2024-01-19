@@ -37,7 +37,41 @@ fn system_test() {
 
     // Step 6: Reading the first entry by ID lookup
     assert_eq!(read_project_by_id(&mut conn, 1).id, project.id);
+    assert_eq!(read_project_by_id(&mut conn, 1).title, project.title);
+    assert_eq!(read_project_by_id(&mut conn, 1).description, project.description);
+    println!("SUCCESSFULLY COMPLETED STEP 6: Finding item with id=1");
 
+    // Step 7: Update all fields of one specific item
+    let mut updated_project_fields = NewProject {title: "New Title111".to_owned(), description: "New Description111".to_owned()};
+    let mut updated_project_from_db = update_project_by_id(&mut conn, 1, updated_project_fields.clone());
+    let project_w_id_2 = read_project_by_id(&mut conn, 2);
+
+    assert_eq!(updated_project_fields.title, updated_project_from_db.title);
+    assert_eq!(updated_project_fields.description, updated_project_from_db.description);
+    assert_ne!(updated_project_fields.title, project_w_id_2.title);
+    assert_ne!(updated_project_fields.description, project_w_id_2.description);
+    println!("SUCCESSFULLY COMPLETED STEP 7: Updating all fields of a single item");
+
+    // Step 8: Update a single field of a given item
+    updated_project_fields.title = "Updated Title: Round 2".to_owned();
+    updated_project_from_db = update_project_by_id(&mut conn, 1, updated_project_fields.clone());
+    let project_w_id_2 = read_project_by_id(&mut conn, 2);
+
+    // Checking updating just the title
+    assert_eq!(updated_project_fields.title, updated_project_from_db.title);
+    assert_eq!(updated_project_fields.description, updated_project_from_db.description);
+    assert_ne!(updated_project_fields.title, project_w_id_2.title);
+    assert_ne!(updated_project_fields.description, project_w_id_2.description);
+
+    // Checking updating just the description
+    updated_project_fields.description = "Updated description: Round 2".to_owned();
+    updated_project_from_db = update_project_by_id(&mut conn, 1, updated_project_fields.clone());
+
+    assert_eq!(updated_project_fields.title, updated_project_from_db.title);
+    assert_eq!(updated_project_fields.description, updated_project_from_db.description);
+    assert_ne!(updated_project_fields.title, project_w_id_2.title);
+    assert_ne!(updated_project_fields.description, project_w_id_2.description);
+    println!("SUCCESSFULLY COMPLETED STEP 7: Updating all fields of a single item");
 
 }
 
