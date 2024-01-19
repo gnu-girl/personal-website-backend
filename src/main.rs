@@ -1,18 +1,20 @@
 #[macro_use] extern crate rocket;
 
-mod dice;
-mod hand;
-mod game;
+// mod dice;
+// mod hand;
+// mod game;
 
-use dice::*;
-use hand::*;
-// use game::*;
+// use dice::*;
+// use hand::*;
+// // use game::*;
 
+use gg_rust::blog::client::{create_project, establish_connection};
+use gg_rust::blog::models::NewProject;
 use rocket::http::Header;
 use rocket::{Request, Response, serde};
 use rocket::fairing::{Fairing, Info, Kind};
-use rocket::form::Form;
-use gg_rust::blog::client::*;
+use rocket::serde::json::Json;
+use serde::{Deserialize, Serialize};
 
 pub struct CORS;
 
@@ -41,17 +43,59 @@ struct NewPost {
     draft: bool
 }
 
+
+#[derive(Serialize, Debug, FromForm, Deserialize)]
+struct Project {
+  id: i32,
+  title: String,
+  description: String, 
+}
+
 #[get("/")]
 fn index() -> &'static str {
     "Hello, world!"
 }
 
-#[get("/roll")]
-fn roll() -> String {
+#[get("/projects")]
+/// Return  json string of all current projects from DB{
+    fn get_projects() -> Json<Project> {
     
-    // println!("{}", mock_data::hello_world());
-    serde_json::to_string(&Die::roll()).unwrap()
+    // Just for testing
+    let project: Project = Project {
+        id: 1,
+        title: "Gnu Girl.com".to_string(),
+        description: "Personal website and portfolio".to_string(),
+    };
+    Json(project)
 }
+
+#[get("/projects/<id>")]
+/// return a project specified by id
+fn get_project_by_id(id: i32) -> Json<Project> {
+    let project: Project = Project {
+        id: id,
+        title: "Gnu Girl.com".to_string(),
+        description: "Personal website and portfolio".to_string(),
+    };
+    Json(project)
+}
+
+#[post("/projects", format = "json", data = "<project>")]
+/// Create a new project & eventually return status code?
+fn new_project(project:Json<NewProject>) {
+    
+    // temporary here - create tables
+
+    let new_project = NewProject {id:project.id, title: project.title.clone(), description: project.description.clone()};
+    let conn = & mut establish_connection();
+    create_project(conn, new_project);
+}
+// #[get("/roll")]
+// fn roll() -> String {
+    
+//     // println!("{}", mock_data::hello_world());
+//     serde_json::to_string(&Die::roll()).unwrap()
+// }
 
 //TODO: Refactor code to create new post
 // #[post("/newPost", data="<post>")]
@@ -64,17 +108,20 @@ fn roll() -> String {
 // }
 
 
-#[get("/newHand")]
-fn new_hand() -> String {
-    serde_json::to_string(&Hand::new()).unwrap()
-}
+// #[get("/newHand")]
+// fn new_hand() -> String {
+//     serde_json::to_string(&Hand::new()).unwrap()
+// }
 
 #[launch]
 fn rocket() -> _ {
     rocket::build()
         .mount("/", routes![index])
-        .mount("/", routes![roll])
-        .mount("/", routes![new_hand])
+        .mount("/", routes![get_projects])
+        .mount("/", routes![get_project_by_id])
+        .mount("/", routes![new_project])
+        // .mount("/", routes![roll])
+        // .mount("/", routes![new_hand])
         // .mount("/blog", routes![new_post])
         .attach(CORS)
 }

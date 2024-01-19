@@ -9,3 +9,12 @@ diesel::table! {
         published -> Bool,
     }
 }
+
+diesel::table! {
+    projects (id) {
+        id -> Integer,
+        title -> Varchar,
+        description -> Varchar,
+        // creation_date -> 
+    }
+}

@@ -2,8 +2,19 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenvy::dotenv;
 use std::env;
-use crate::{blog::models::{NewPost, Post, PostQuery}, schema::posts};
+use crate::{blog::models::{NewPost, Post, PostQuery, NewProject}, schema::posts, schema::projects};
 use crate::blog::queries::*;
+
+use super::models::Project;
+
+/// Create the needed tables in the database
+pub fn create_tables(conn: &mut PgConnection) {
+    diesel::sql_query("CREATE TABLE projects(id INTEGER PRIMARY KEY, title VARCHAR, description VARCHAR)").execute(conn).expect("ERRO CREATING PROJECTS TABLE");
+}
+
+pub fn drop_tables(conn: &mut PgConnection) {
+    diesel::sql_query("DROP TABLE IF EXISTS projects").execute(conn).expect("ERROR DROPPING TABLE");
+}
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
@@ -22,6 +33,17 @@ pub fn create_post(conn: &mut PgConnection, title: &str, body: &str, author: &st
         .get_result(conn)
         .expect("Error saving new post")
 }
+
+pub fn create_project(conn: &mut PgConnection, new_project: NewProject) -> Project {
+    diesel::insert_into(projects::table)
+        .values(&new_project)
+        .get_result(conn)
+        .expect("Error saving project")
+}
+
+// pub fn read_project(conn: &mut PgConnection) -> Project {
+//     diesel::
+// }
 
 pub fn publish_draft_post(conn: &mut PgConnection, query_id: i32) -> Post {
     use crate::schema::posts::dsl::*;
