@@ -2,8 +2,15 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenvy::dotenv;
 use std::env;
+use crate::errors::Error;
+use crate::errors::Error::*;
+// use crate::errors::Result;
+use crate::errors::*;
+use snafu::ResultExt;
+use snafu::prelude::*;
 use crate::{blog::models::{NewPost, Post, PostQuery, NewProject}, schema::posts, schema::projects};
 use crate::blog::queries::*;
+use crate::schema::projects::dsl::*;
 
 use super::models::Project;
 
@@ -25,15 +32,15 @@ pub fn establish_connection() -> PgConnection {
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
 }
 
-pub fn create_post(conn: &mut PgConnection, title: &str, body: &str, author: &str, published: bool) -> Post {
+// pub fn create_post(conn: &mut PgConnection, title: &str, body: &str, author: &str, published: bool) -> Post {
 
-    let new_post = NewPost { title, body, author, published };
+//     let new_post = NewPost { title, body, author, published };
 
-    diesel::insert_into(posts::table)
-        .values(&new_post)
-        .get_result(conn)
-        .expect("Error saving new post")
-}
+//     diesel::insert_into(posts::table)
+//         .values(&new_post)
+//         .get_result(conn)
+//         .expect("Error saving new post")
+// }
 
 /// Crate new entry in proejcts table
 pub fn create_project(conn: &mut PgConnection, new_project: NewProject) -> Project {
@@ -45,28 +52,25 @@ pub fn create_project(conn: &mut PgConnection, new_project: NewProject) -> Proje
 
 /// Read all entries in projects table
 pub fn read_projects(conn: &mut PgConnection) -> Vec<Project> {
-    use crate::schema::projects::dsl::*;
-
     projects.select(Project::as_select())
-    .load(conn)
-    .expect("Error loading projects")
+        .load(conn)
+        .expect("Error loading projects")
 
 }
 
 /// Return the project matching the given id
-pub fn read_project_by_id(conn: &mut PgConnection, new_id:i32) -> Project {
-    use crate::schema::projects::dsl::*;
+pub fn read_project_by_id(conn: &mut PgConnection, new_id:i32) -> Result<Project, Error> {
+    let found_project = 
+        projects.select(Project::as_select())
+        .filter(id.eq(new_id))
+        .first(conn)
+        .context(InvalidIdSnafu {id:new_id})?;
 
-    projects.select(Project::as_select())
-    .filter(id.eq(new_id))
-    .first(conn)
-    .expect("Error finding project with given id")
+    Ok(found_project)
 }
 
 /// Update the project entry matching the given id and return the updated record
 pub fn update_project_by_id(conn: &mut PgConnection, new_id:i32, new_project: NewProject) -> Project {
-    use crate::schema::projects::dsl::*;
-
     diesel::update(projects)
         .filter(id.eq(new_id))
         .set((
@@ -76,6 +80,14 @@ pub fn update_project_by_id(conn: &mut PgConnection, new_id:i32, new_project: Ne
         .get_result(conn)
         .expect("ERROR UPDATING PROJECT")
 }
+
+pub fn delete_project_by_id(conn: &mut PgConnection, new_id:i32) -> Project {
+    diesel::delete(projects)
+        .filter(id.eq(new_id))
+        .get_result(conn)
+        .expect("Error deleting project")
+}
+
 pub fn publish_draft_post(conn: &mut PgConnection, query_id: i32) -> Post {
     use crate::schema::posts::dsl::*;
 
