@@ -86,7 +86,7 @@ fn new_project(project:Json<NewProject>) {
     
     // temporary here - create tables
 
-    let new_project = NewProject {id:project.id, title: project.title.clone(), description: project.description.clone()};
+    let new_project = NewProject {title: project.title.clone(), description: project.description.clone()};
     let conn = & mut establish_connection();
     create_project(conn, new_project);
 }

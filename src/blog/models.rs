@@ -40,7 +40,6 @@ pub struct NewPost<'a> {
 #[derive(Insertable, Serialize, Deserialize, Debug)]
 #[diesel(table_name = projects)]
 pub struct NewProject {
-    pub id: i32,
     pub title: String,
     pub description: String
 }
